@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit"
+import { toggleActions } from "./ui-slice";
 
 const initialCart = {
     items: [],
     totalQuantity: 0,
+    changed: false,
     // totalAmount: 6
 }
 const cartSlice = createSlice({
@@ -17,10 +19,16 @@ const cartSlice = createSlice({
         //     state.totalQuantity--;
         //     state.totalAmount -= 6
         // }
+        replaceCart(state, action) {
+            state.totalQuantity = action.payload.totalQuantity;
+            state.items = action.payload.items;
+        },
+
         addItemToCart(state, action) {
             const newItem = action.payload;
             const existingItem = state.items.find((item) => item.id === newItem.id);
             state.totalQuantity++;
+            state.changed = true;
 
             if (!existingItem) {
                 state.items.push({
@@ -45,6 +53,8 @@ const cartSlice = createSlice({
                 state.items = state.items.filter(item => item.id !== id);
             } else {
                 existingItem.quantity--;
+                state.changed = true;
+
                 existingItem.totalPrice = existingItem.totalPrice - existingItem.price;
             }
         }

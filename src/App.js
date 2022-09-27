@@ -4,8 +4,9 @@ import Cart from './components/Cart/Cart';
 import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 import Notification from './components/UI/Notification';
+import { fetchCartData, sendCartData } from './store/cart-actions';
+import { cartActions } from './store/cart-slice';
 import { toggleActions } from './store/ui-slice';
-
 let isInitail = true;
 function App() {
   const show = useSelector(state => state.toggler.show)
@@ -14,7 +15,22 @@ function App() {
   const notification = useSelector(state => state.toggler.notification)
 
   useEffect(() => {
-    const sendCartData = async () => {
+    dispatch(fetchCartData())
+  }, [dispatch])
+
+  useEffect(() => {
+    if (isInitail) {
+      isInitail = false
+      return;
+    }
+    if (cart.changed) {
+      dispatch(sendCartData(cart))
+
+    }
+  }, [cart, dispatch])
+  /* 
+useEffect(() => {
+   const sendCartData = async () => {
       dispatch(toggleActions.showNotification({
         status: 'pending',
         title: 'Sending...',
@@ -46,9 +62,7 @@ function App() {
         message: 'Sending cart data failed'
       }))
     })
-
-  }, [cart, dispatch])
-
+}, [cart, dispatch])*/
   return (
     <Fragment>
       {notification && <Notification
